@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/pasosdeJesus/cor1440_gen.git
-  revision: 92807c4b37e6c7a0c883a9b66f486fa7330a9762
+  revision: 0a19e6d7cee2582bf813faeba9f32084b489dd39
+  branch: sintemas
   specs:
     cor1440_gen (1.0b3)
       devise
@@ -13,7 +14,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/heb412_gen.git
-  revision: 50f8620c641746fde1ee99f3862cc017d8313bf6
+  revision: c292d6c1490fd3c74362c83e2557b91891107ece
+  branch: sintemas
   specs:
     heb412_gen (1.0.b6)
       chosen-rails
@@ -25,7 +27,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/mr519_gen.git
-  revision: 66c39ec3d364381defb5400204d5611802e67f39
+  revision: 2f093ee860ed3f161dbcbe16fbe44f9dfc14ffc4
+  branch: sintemas
   specs:
     mr519_gen (0.2.0)
       rails (~> 6.0.0.rc1, >= 6.0.0.rc1)
@@ -33,7 +36,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/sal7711_gen.git
-  revision: 76eb6a9e994b9786062dac9c63349f4a4d6881ed
+  revision: 4b054fcf0c86b453d0bdc96a8970470a2fd89d43
+  branch: sintemas
   specs:
     sal7711_gen (1.0.b2)
       rails
@@ -41,7 +45,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/sal7711_web.git
-  revision: 37c2a7b226871cb228f49f6498f0c710cae66da9
+  revision: 274530964943928e313453f7522e1a3d34dcb68b
+  branch: sintemas
   specs:
     sal7711_web (1.0.a3)
       rails
@@ -49,7 +54,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/sip.git
-  revision: 8487da3ad4a1870193b4f26b433d2aea9e40090f
+  revision: 6a7f927fde50807da9389f7f9fb3d80e78f585e4
+  branch: sintemas
   specs:
     sip (2.0.b6)
       bootstrap-datepicker-rails
@@ -71,7 +77,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/sivel2_gen.git
-  revision: 0cb8814bdd72adc3c56b08fa8643ebb893868262
+  revision: 0d11d125f65f1613666406494e0c53a604f95f7d
+  branch: sintemas
   specs:
     sivel2_gen (2.0b9)
       devise
@@ -80,7 +87,8 @@ GIT
 
 GIT
   remote: https://github.com/pasosdeJesus/sivel2_sjr.git
-  revision: d2f1341c7ec908df2251bf297c8756ed82a15b57
+  revision: 771864448766afd325981536970e4c8f87bcbda6
+  branch: sintemas
   specs:
     sivel2_sjr (2.0.b1)
       rails
@@ -348,7 +356,7 @@ GEM
     rb-inotify (0.10.0)
       ffi (~> 1.0)
     redcarpet (3.4.0)
-    regexp_parser (1.5.1)
+    regexp_parser (1.6.0)
     responders (3.0.0)
       actionpack (>= 5.0)
       railties (>= 5.0)
@@ -427,7 +435,7 @@ GEM
     will_paginate (3.1.7)
     xpath (3.2.0)
       nokogiri (~> 1.8)
-    zeitwerk (2.1.8)
+    zeitwerk (2.1.9)
 
 PLATFORMS
   ruby
