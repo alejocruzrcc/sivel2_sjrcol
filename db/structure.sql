@@ -59,12 +59,12 @@ CREATE FUNCTION public.campointro(character varying, character varying) RETURNS 
 CREATE FUNCTION public.municipioubicacion(integer) RETURNS character varying
     LANGUAGE sql
     AS $_$
-        SELECT (SELECT nombre FROM sip_pais WHERE id=ubicacion.id_pais) 
-            || COALESCE((SELECT '/' || nombre FROM sip_departamento 
+        SELECT (SELECT nombre FROM public.sip_pais WHERE id=ubicacion.id_pais) 
+            || COALESCE((SELECT '/' || nombre FROM public.sip_departamento 
             WHERE sip_departamento.id = ubicacion.id_departamento),'') 
-            || COALESCE((SELECT '/' || nombre FROM sip_municipio 
+            || COALESCE((SELECT '/' || nombre FROM public.sip_municipio 
             WHERE sip_municipio.id = ubicacion.id_municipio),'') 
-            FROM sip_ubicacion AS ubicacion 
+            FROM public.sip_ubicacion AS ubicacion 
             WHERE ubicacion.id=$1;
       $_$;
 
@@ -297,45 +297,6 @@ CREATE TABLE public.causaref (
 
 
 --
--- Name: sip_persona_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.sip_persona_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sip_persona; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sip_persona (
-    id integer DEFAULT nextval('public.sip_persona_id_seq'::regclass) NOT NULL,
-    nombres character varying(100) COLLATE public.es_co_utf_8 NOT NULL,
-    apellidos character varying(100) COLLATE public.es_co_utf_8 NOT NULL,
-    anionac integer,
-    mesnac integer,
-    dianac integer,
-    sexo character(1) NOT NULL,
-    numerodocumento character varying(100),
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    id_pais integer,
-    nacionalde integer,
-    tdocumento_id integer,
-    id_departamento integer,
-    id_municipio integer,
-    id_clase integer,
-    CONSTRAINT persona_check CHECK (((dianac IS NULL) OR (((dianac >= 1) AND (((mesnac = 1) OR (mesnac = 3) OR (mesnac = 5) OR (mesnac = 7) OR (mesnac = 8) OR (mesnac = 10) OR (mesnac = 12)) AND (dianac <= 31))) OR (((mesnac = 4) OR (mesnac = 6) OR (mesnac = 9) OR (mesnac = 11)) AND (dianac <= 30)) OR ((mesnac = 2) AND (dianac <= 29))))),
-    CONSTRAINT persona_mesnac_check CHECK (((mesnac IS NULL) OR ((mesnac >= 1) AND (mesnac <= 12)))),
-    CONSTRAINT persona_sexo_check CHECK (((sexo = 'S'::bpchar) OR (sexo = 'F'::bpchar) OR (sexo = 'M'::bpchar)))
-);
-
-
---
 -- Name: sivel2_gen_caso_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -448,6 +409,36 @@ CREATE TABLE public.sivel2_sjr_casosjr (
 
 
 --
+-- Name: sivel2_sjr_victimasjr; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sivel2_sjr_victimasjr (
+    sindocumento boolean,
+    id_estadocivil integer DEFAULT 0,
+    id_rolfamilia integer DEFAULT 0 NOT NULL,
+    cabezafamilia boolean,
+    id_maternidad integer DEFAULT 0,
+    discapacitado boolean,
+    id_actividadoficio integer DEFAULT 0,
+    id_escolaridad integer DEFAULT 0,
+    asisteescuela boolean,
+    tienesisben boolean,
+    id_departamento integer,
+    id_municipio integer,
+    nivelsisben integer,
+    id_regimensalud integer DEFAULT 0,
+    eps character varying(1000),
+    libretamilitar boolean,
+    distrito integer,
+    progadultomayor boolean,
+    fechadesagregacion date,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    id_victima integer NOT NULL
+);
+
+
+--
 -- Name: cben1; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -463,12 +454,12 @@ CREATE VIEW public.cben1 AS
             ELSE 0
         END AS beneficiario,
     1 AS npersona,
-    persona.anionac
+    victimasjr.id_estadocivil
    FROM public.sivel2_gen_caso caso,
     public.sivel2_sjr_casosjr casosjr,
     public.sivel2_gen_victima victima,
-    public.sip_persona persona
-  WHERE ((caso.id = victima.id_caso) AND (caso.id = casosjr.id_caso) AND (caso.id = victima.id_caso) AND (persona.id = victima.id_persona));
+    public.sivel2_sjr_victimasjr victimasjr
+  WHERE ((caso.id = victima.id_caso) AND (caso.id = casosjr.id_caso) AND (caso.id = victima.id_caso) AND (victima.id = victimasjr.id_victima));
 
 
 --
@@ -680,7 +671,7 @@ CREATE VIEW public.cben2 AS
     cben1.contacto,
     cben1.beneficiario,
     cben1.npersona,
-    cben1.anionac,
+    cben1.id_estadocivil,
     ubicacion.id_departamento,
     departamento.nombre AS departamento_nombre,
     ubicacion.id_municipio,
@@ -2526,7 +2517,8 @@ CREATE TABLE public.mr519_gen_campo (
     nombreinterno character varying(60),
     fila integer,
     columna integer,
-    ancho integer
+    ancho integer,
+    tablabasica character varying(32)
 );
 
 
@@ -3412,6 +3404,45 @@ ALTER SEQUENCE public.sip_perfilactorsocial_id_seq OWNED BY public.sip_perfilact
 
 
 --
+-- Name: sip_persona_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sip_persona_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sip_persona; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sip_persona (
+    id integer DEFAULT nextval('public.sip_persona_id_seq'::regclass) NOT NULL,
+    nombres character varying(100) COLLATE public.es_co_utf_8 NOT NULL,
+    apellidos character varying(100) COLLATE public.es_co_utf_8 NOT NULL,
+    anionac integer,
+    mesnac integer,
+    dianac integer,
+    sexo character(1) NOT NULL,
+    numerodocumento character varying(100),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    id_pais integer,
+    nacionalde integer,
+    tdocumento_id integer,
+    id_departamento integer,
+    id_municipio integer,
+    id_clase integer,
+    CONSTRAINT persona_check CHECK (((dianac IS NULL) OR (((dianac >= 1) AND (((mesnac = 1) OR (mesnac = 3) OR (mesnac = 5) OR (mesnac = 7) OR (mesnac = 8) OR (mesnac = 10) OR (mesnac = 12)) AND (dianac <= 31))) OR (((mesnac = 4) OR (mesnac = 6) OR (mesnac = 9) OR (mesnac = 11)) AND (dianac <= 30)) OR ((mesnac = 2) AND (dianac <= 29))))),
+    CONSTRAINT persona_mesnac_check CHECK (((mesnac IS NULL) OR ((mesnac >= 1) AND (mesnac <= 12)))),
+    CONSTRAINT persona_sexo_check CHECK (((sexo = 'S'::bpchar) OR (sexo = 'F'::bpchar) OR (sexo = 'M'::bpchar)))
+);
+
+
+--
 -- Name: sip_persona_trelacion_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -3611,6 +3642,40 @@ CREATE TABLE public.sip_trelacion (
     updated_at timestamp without time zone,
     CONSTRAINT trelacion_check CHECK (((fechadeshabilitacion IS NULL) OR (fechadeshabilitacion >= fechacreacion)))
 );
+
+
+--
+-- Name: sip_trivalente; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sip_trivalente (
+    id bigint NOT NULL,
+    nombre character varying(500) NOT NULL,
+    observaciones character varying(5000),
+    fechacreacion date NOT NULL,
+    fechadeshabilitacion date,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
+-- Name: sip_trivalente_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sip_trivalente_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sip_trivalente_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.sip_trivalente_id_seq OWNED BY public.sip_trivalente.id;
 
 
 --
@@ -4751,30 +4816,6 @@ CREATE TABLE public.sivel2_gen_iglesia (
     observaciones character varying(5000),
     CONSTRAINT iglesia_check CHECK (((fechadeshabilitacion IS NULL) OR (fechadeshabilitacion >= fechacreacion)))
 );
-
-
---
--- Name: sivel2_gen_iniciador; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.sivel2_gen_iniciador AS
- SELECT s3.id_caso,
-    s3.fechainicio,
-    s3.id_usuario,
-    usuario.nusuario
-   FROM public.usuario,
-    ( SELECT s2.id_caso,
-            s2.fechainicio,
-            min(s2.id_usuario) AS id_usuario
-           FROM public.sivel2_gen_caso_usuario s2,
-            ( SELECT f1.id_caso,
-                    min(f1.fechainicio) AS m
-                   FROM public.sivel2_gen_caso_usuario f1
-                  GROUP BY f1.id_caso) c
-          WHERE ((s2.id_caso = c.id_caso) AND (s2.fechainicio = c.m))
-          GROUP BY s2.id_caso, s2.fechainicio
-          ORDER BY s2.id_caso, s2.fechainicio) s3
-  WHERE (usuario.id = s3.id_usuario);
 
 
 --
@@ -5927,36 +5968,6 @@ CREATE TABLE public.sivel2_sjr_tipodesp (
 
 
 --
--- Name: sivel2_sjr_victimasjr; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.sivel2_sjr_victimasjr (
-    sindocumento boolean,
-    id_estadocivil integer DEFAULT 0,
-    id_rolfamilia integer DEFAULT 0 NOT NULL,
-    cabezafamilia boolean,
-    id_maternidad integer DEFAULT 0,
-    discapacitado boolean,
-    id_actividadoficio integer DEFAULT 0,
-    id_escolaridad integer DEFAULT 0,
-    asisteescuela boolean,
-    tienesisben boolean,
-    id_departamento integer,
-    id_municipio integer,
-    nivelsisben integer,
-    id_regimensalud integer DEFAULT 0,
-    eps character varying(1000),
-    libretamilitar boolean,
-    distrito integer,
-    progadultomayor boolean,
-    fechadesagregacion date,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    id_victima integer NOT NULL
-);
-
-
---
 -- Name: taccion_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -6457,6 +6468,13 @@ ALTER TABLE ONLY public.sip_tema ALTER COLUMN id SET DEFAULT nextval('public.sip
 --
 
 ALTER TABLE ONLY public.sip_tipoactorsocial ALTER COLUMN id SET DEFAULT nextval('public.sip_tipoactorsocial_id_seq'::regclass);
+
+
+--
+-- Name: sip_trivalente id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sip_trivalente ALTER COLUMN id SET DEFAULT nextval('public.sip_trivalente_id_seq'::regclass);
 
 
 --
@@ -7670,6 +7688,14 @@ ALTER TABLE ONLY public.sip_tema
 
 ALTER TABLE ONLY public.sip_tipoactorsocial
     ADD CONSTRAINT sip_tipoactorsocial_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: sip_trivalente sip_trivalente_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sip_trivalente
+    ADD CONSTRAINT sip_trivalente_pkey PRIMARY KEY (id);
 
 
 --
@@ -10878,6 +10904,11 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20190715083916'),
 ('20190715182611'),
 ('20190718032712'),
-('20190726203302');
+('20190726203302'),
+('20190804223012'),
+('20190805162246'),
+('20190818013251'),
+('20190818013900'),
+('20190818014000');
 
 
