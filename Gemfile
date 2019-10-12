@@ -114,7 +114,9 @@ gem 'cor1440_gen', git: 'https://github.com/pasosdeJesus/cor1440_gen.git'
 #gem 'cor1440_gen', path: '../cor1440_gen'
 
 # Motor de SIVeL 2 - SJR
-gem 'sivel2_sjr', git: 'https://github.com/pasosdeJesus/sivel2_sjr.git'
+gem 'sivel2_sjr', 
+  git: 'https://github.com/pasosdeJesus/sivel2_sjr.git', 
+  branch: 'antes-respactividad'
 #gem 'sivel2_sjr', path: '../sivel2_sjr'
 
 # Motor Sal7711_gen
