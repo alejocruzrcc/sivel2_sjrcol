@@ -11,6 +11,12 @@ module Cor1440Gen
       usuario_id:1,
     }
 
+    PRUEBA_ACT_SIN_NOM = {
+      fecha:'2017-03-02',
+      oficina_id:1,
+      usuario_id:1,
+    }
+
     setup do
       Rails.application.config.x.formato_fecha = 'yyyy-mm-dd'
     end
